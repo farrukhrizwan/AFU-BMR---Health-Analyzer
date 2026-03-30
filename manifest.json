@@ -1,6 +1,6 @@
 {
-  "name": "AFU BMR & Health Analyzer",
-  "short_name": "BMR & Health Analyzer",
+  "name": "BMR Analyzer",
+  "short_name": "BMR Analyzer",
   "description": "A free tool to analyze your BMR, it calculates approximate value of BMR,no data is saved or sold to third parties",
   "start_url": "/",
   "display": "standalone",
