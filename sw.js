@@ -7,9 +7,9 @@ const STATIC_ASSETS = [
   'terms.html',
   'manifest.json',
   'offline.html',
-  'pwa-icons/icon-144x144.png',
-  'pwa-icons/icon-192x192.png',
-  'pwa-icons/icon-512x512.png'
+  'icons/icon-144x144.png',
+  'icons/icon-192x192.png',
+  'icons/icon-512x512.png'
 ];
 
 self.addEventListener('install', (event) => {
