@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFU BMR & Health Analyzer</title>
+	<meta name="description" content="A free tool to analyze your BMR, it calculates approximate value of BMR,no data is saved or sold to third parties">
+    <meta name="author" content="Farrukh Barlas">
+	<!-- PWA Core -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF9800">
+	<!-- Windows Specific -->
+    <meta name="msapplication-TileColor" content="#4a90d9">
+    <meta name="msapplication-TileImage" content="pwa-icons/icon-144x144.png">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --accent-color: #FF9800;
+            --light-color: #f4f4f4;
+            --dark-color: #333;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --success-color: #4CAF50;
+            --info-color: #2196F3;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: auto;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 7px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .copyright {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .form-section {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .radio-option input[type="radio"] {
+            width: auto;
+            margin: 0;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .results-section {
+            padding: 30px;
+            background: var(--light-color);
+            display: none;
+        }
+        
+        .results-section.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .result-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .health-status {
+            text-align: center;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .status-underweight {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status-normal {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .status-overweight {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .status-obese {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .bmi-scale {
+            display: flex;
+            height: 30px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .bmi-underweight {
+            background: #2196F3;
+            flex: 0 0 15%;
+        }
+        
+        .bmi-normal {
+            background: #4CAF50;
+            flex: 0 0 25%;
+        }
+        
+        .bmi-overweight {
+            background: #FF9800;
+            flex: 0 0 25%;
+        }
+        
+        .bmi-obese {
+            background: #f44336;
+            flex: 0 0 35%;
+        }
+        
+        .bmi-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .form-section, .results-section {
+                padding: 20px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+        
+        .disclaimer {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .disclaimer h4 {
+            margin-bottom: 8px;
+        }
+		 /* ─── FOOTER ─── */
+    footer {
+      text-align: center; padding: 18px 14px;
+      border-top: 1px solid var(--bdr);
+      color: var(--muted); font-size: .76rem; line-height: 1.8;
+    }
+    footer strong { color: var(--txt); }
+    </style>
+	<script src="/pwa-register.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class:// Place your logo here (max 40x40px) </div>
+            <div> <h1>⚕️ <strong>AFU BMR & Health Analyzer</h1> </div>
+            <p class="subtitle">Calculate your BMR (Basal Metabolic Rate) and daily calorie needs</p>
+        </header>
+        
+        <div class="form-section" id="inputSection">
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="male" name="gender" value="male" checked>
+                        <label for="male">Male</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="female" name="gender" value="female">
+                        <label for="female">Female</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="ageInputMethod">Age Input Method</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="ageGroup" name="ageInputMethod" value="group" checked>
+                        <label for="ageGroup">Age Group</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="exactAge" name="ageInputMethod" value="exact">
+                        <label for="exactAge">Exact Age</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group" id="ageGroupSelect">
+                <label for="ageGroupValue">Select Age Group</label>
+                <select id="ageGroupValue">
+                    <option value="15-17">15-17 years</option>
+                    <option value="18-24">18-24 years</option>
+                    <option value="25-34" selected>25-34 years</option>
+                    <option value="35-44">35-44 years</option>
+                    <option value="45-54">45-54 years</option>
+                    <option value="55-64">55-64 years</option>
+                    <option value="65+">65+ years</option>
+                </select>
+            </div>
+            
+            <div class="form-group hidden" id="exactAgeInput">
+                <label for="exactAgeValue">Enter Your Age</label>
+                <input type="number" id="exactAgeValue" min="15" max="100" placeholder="Enter age (15-100)">
+            </div>
+            
+            <div class="form-group">
+                <label for="weight">Weight (kg)</label>
+                <input type="number" id="weight" min="30" max="300" step="0.1" placeholder="Enter weight in kg">
+            </div>
+            
+            <div class="form-group">
+                <label for="height">Height (cm)</label>
+                <input type="number" id="height" min="100" max="250" placeholder="Enter height in cm">
+            </div>
+            
+            <div class="form-group">
+                <label for="activityLevel">Activity Level</label>
+                <select id="activityLevel">
+                    <option value="1.2">Sedentary (little to no exercise)</option>
+                    <option value="1.375">Lightly Active (light exercise 1-3 days/week)</option>
+                    <option value="1.55">Moderately Active (moderate exercise 3-5 days/week)</option>
+                    <option value="1.725">Very Active (hard exercise 6-7 days/week)</option>
+                    <option value="1.9">Extremely Active (very hard exercise, physical job)</option>
+                </select>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-primary" onclick="calculateBMR()">Calculate BMR</button>
+                <button class="btn-secondary" onclick="exportToPDF()">Export to PDF</button>
+            </div>
+            
+            <div class="disclaimer">
+                <h4>Disclaimer</h4>
+                <p>This calculator provides estimates only. For medical advice, consult a healthcare professional. Results are not stored anywhere and are for personal use only.</p>
+            </div>
+        </div>
+        
+        <div class="results-section" id="resultsSection">
+            <div class="result-card">
+                <h3>Your Health Analysis</h3>
+                <div class="result-item">
+                    <span class="result-label">Basal Metabolic Rate (BMR)</span>
+                    <span class="result-value" id="bmrResult">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Daily Calorie Needs</span>
+                    <span class="result-value" id="calorieResult">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">BMI</span>
+                    <span class="result-value" id="bmiResult">-</span>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <h3>Health Status</h3>
+                <div id="healthStatus" class="health-status">-</div>
+                <div class="bmi-scale">
+                    <div class="bmi-underweight"></div>
+                    <div class="bmi-normal"></div>
+                    <div class="bmi-overweight"></div>
+                    <div class="bmi-obese"></div>
+                </div>
+                <div class="bmi-labels">
+                    <span>Underweight (&lt;18.5)</span>
+                    <span>Normal (18.5-24.9)</span>
+                    <span>Overweight (25-29.9)</span>
+                    <span>Obese (&ge;30)</span>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <h3>Recommendations</h3>
+                <div id="recommendations">-</div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-primary" onclick="calculateBMR()">Recalculate</button>
+                <button class="btn-secondary" onclick="exportToPDF()">Export to PDF</button>
+            </div>
+        </div>
+    </div>
+	<footer>
+  <p>🔒 <strong>100% Private</strong>No data is stored.</p>
+  <p> 	<a href="https://barlas.fr.eu.org">Blog 📝</a>
+		<a href="privacy"target="_blank" rel="noopener">Privacy Policy</a>
+        <a href="terms"target="_blank" rel="noopener">Terms & Conditions</a>
+		<a href="about"target="_blank" rel="noopener">About</a> 
+		<a href="https://www.facebook.com/farrukhbarlas.official" target="_blank" rel="noopener noreferrer" style="text-decoration:none">facebook</a>
+        <a href="https://www.youtube.com/@tecknowdaily" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Youtube</a>
+        <a href="https://x.com/Farrukh_barlas" target="_blank" rel="noopener noreferrer" style="text-decoration:none">✖️</a> </p> 
+            © 2026 <a href="https://farrukhrizwan.qzz.io/" target="_blank" rel="noopener">Farrukh Barlas</a> | 
+            <a href="https://www.afuwebs.dpdns.org/home" target="_blank" rel="noopener">AFUWEBS  — All Rights Reserved</a>
+     
+</footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Page title customization
+        const pageTitle = document.getElementById('pageTitle');
+        pageTitle.addEventListener('dblclick', function() {
+            const newTitle = prompt('Enter new page title:', pageTitle.textContent);
+            if (newTitle && newTitle.trim() !== '') {
+                pageTitle.textContent = newTitle.trim();
+            }
+        });
+        
+        // Age input method toggle
+        const ageInputMethod = document.querySelectorAll('input[name="ageInputMethod"]');
+        const ageGroupSelect = document.getElementById('ageGroupSelect');
+        const exactAgeInput = document.getElementById('exactAgeInput');
+        
+        ageInputMethod.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'group') {
+                    ageGroupSelect.classList.remove('hidden');
+                    exactAgeInput.classList.add('hidden');
+                } else {
+                    ageGroupSelect.classList.add('hidden');
+                    exactAgeInput.classList.remove('hidden');
+                }
+            });
+        });
+        
+        // BMR Calculation Functions
+        function getAge() {
+            const method = document.querySelector('input[name="ageInputMethod"]:checked').value;
+            if (method === 'group') {
+                const ageGroup = document.getElementById('ageGroupValue').value;
+                const groupMap = {
+                    '15-17': 16,
+                    '18-24': 21,
+                    '25-34': 29.5,
+                    '35-44': 39.5,
+                    '45-54': 49.5,
+                    '55-64': 59.5,
+                    '65+': 70
+                };
+                return groupMap[ageGroup] || 30;
+            } else {
+                const exactAge = parseFloat(document.getElementById('exactAgeValue').value);
+                return isNaN(exactAge) ? 30 : exactAge;
+            }
+        }
+        
+        function calculateBMR() {
+			const name = document.getElementById('userName').value;
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            const age = getAge();
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const activityLevel = parseFloat(document.getElementById('activityLevel').value);
+            
+            // Validation
+            if (isNaN(weight) || weight < 30 || weight > 300) {
+                alert('Please enter a valid weight between 30 and 300 kg');
+                return;
+            }
+            
+            if (isNaN(height) || height < 100 || height > 250) {
+                alert('Please enter a valid height between 100 and 250 cm');
+                return;
+            }
+            
+            if (age < 15 || age > 100) {
+                alert('Please enter a valid age between 15 and 100 years');
+                return;
+            }
+            
+            // BMR Calculation using Mifflin-St Jeor Equation
+            let bmr;
+            if (gender === 'male') {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            } else {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+            }
+            
+            // Daily calorie needs
+            const dailyCalories = bmr * activityLevel;
+            
+            // BMI Calculation
+            const heightInMeters = height / 100;
+            const bmi = weight / (heightInMeters * heightInMeters);
+            
+            // Health Status
+            let healthStatus = '';
+            let statusClass = '';
+            let recommendations = '';
+            
+            if (bmi < 18.5) {
+                healthStatus = 'Underweight';
+                statusClass = 'status-underweight';
+                recommendations = 'Consider consulting a nutritionist for healthy weight gain strategies. Focus on nutrient-dense foods.';
+            } else if (bmi >= 18.5 && bmi < 25) {
+                healthStatus = 'Normal Weight';
+                statusClass = 'status-normal';
+                recommendations = 'Maintain your healthy lifestyle with balanced nutrition and regular physical activity.';
+            } else if (bmi >= 25 && bmi < 30) {
+                healthStatus = 'Overweight';
+                statusClass = 'status-overweight';
+                recommendations = 'Consider moderate exercise and balanced diet for healthy weight management. Consult healthcare provider.';
+            } else {
+                healthStatus = 'Obese';
+                statusClass = 'status-obese';
+                recommendations = 'Consult healthcare provider for personalized weight management plan. Focus on sustainable lifestyle changes.';
+            }
+            
+            // Display Results
+            document.getElementById('bmrResult').textContent = `${Math.round(bmr)} calories/day`;
+            document.getElementById('calorieResult').textContent = `${Math.round(dailyCalories)} calories/day`;
+            document.getElementById('bmiResult').textContent = bmi.toFixed(1);
+            
+            const healthStatusElement = document.getElementById('healthStatus');
+            healthStatusElement.textContent = healthStatus;
+            healthStatusElement.className = `health-status ${statusClass}`;
+            
+            document.getElementById('recommendations').innerHTML = `
+                <p><strong>Based on your BMI of ${bmi.toFixed(1)}:</strong></p>
+                <p>${recommendations}</p>
+                <p><strong>General Tips:</strong></p>
+                <ul>
+                    <li>Stay hydrated with 8-10 glasses of water daily</li>
+                    <li>Include variety of fruits and vegetables in your diet</li>
+                    <li>Aim for at least 150 minutes of moderate exercise weekly</li>
+                    <li>Get 7-9 hours of quality sleep each night</li>
+                </ul>
+            `;
+            
+            // Show results section
+            document.getElementById('inputSection').style.display = 'none';
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.style.display = 'block';
+            resultsSection.classList.add('show');
+        }
+        
+        // PDF Export Function
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('Health Analysis Report', 105, 20, { align: 'center' });
+            
+            // Date
+            const now = new Date();
+            doc.setFontSize(10);
+            doc.text(`Generated on: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, 105, 30, { align: 'center' });
+            
+            // Input Data
+            doc.setFontSize(16);
+            doc.text('Input Data', 20, 45);
+            
+            doc.setFontSize(12);
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            const age = getAge();
+            const weight = document.getElementById('weight').value;
+            const height = document.getElementById('height').value;
+            const activityLevelText = document.getElementById('activityLevel').options[document.getElementById('activityLevel').selectedIndex].text;
+            
+            doc.text(`Gender: ${gender.charAt(0).toUpperCase() + gender.slice(1)}`, 20, 55);
+            doc.text(`Age: ${age} years`, 20, 65);
+            doc.text(`Weight: ${weight} kg`, 20, 75);
+            doc.text(`Height: ${height} cm`, 20, 85);
+            doc.text(`Activity Level: ${activityLevelText}`, 20, 95);
+            
+            // Results
+            doc.setFontSize(16);
+            doc.text('Results', 20, 110);
+            
+            doc.setFontSize(12);
+            const bmr = document.getElementById('bmrResult').textContent;
+            const calories = document.getElementById('calorieResult').textContent;
+            const bmi = document.getElementById('bmiResult').textContent;
+            const healthStatus = document.getElementById('healthStatus').textContent;
+            
+            doc.text(`BMR: ${bmr}`, 20, 120);
+            doc.text(`Daily Calorie Needs: ${calories}`, 20, 130);
+            doc.text(`BMI: ${bmi}`, 20, 140);
+            doc.text(`Health Status: ${healthStatus}`, 20, 150);
+            
+            // Recommendations
+            doc.setFontSize(16);
+            doc.text('Recommendations', 20, 165);
+            
+            doc.setFontSize(10);
+            const recommendations = document.getElementById('recommendations').textContent;
+            const splitRecommendations = doc.splitTextToSize(recommendations, 170);
+            doc.text(splitRecommendations, 20, 175);
+            
+            // Footer
+            doc.setFontSize(8);
+            doc.text('© FARRUKH BARLAS & AFU WEBS - This report is for informational purposes only.', 105, 280, { align: 'center' });
+            
+            // Save PDF
+            doc.save('health-analysis-report.pdf');
+        }
+        
+        // Allow recalculation
+        window.recalculate = function() {
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+        };
+    </script>
+</body>
+</html>
