@@ -1,4 +1,4 @@
-const CACHE_NAME = 'marksheet-v2'; // Changed version to bust old cache
+const CACHE_NAME = 'bmranalyzer-v1'; 
 const STATIC_ASSETS = [
   './',
   'index.html',
