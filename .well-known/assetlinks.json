@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "org.eu.fr.barlas.bmranalyzer.twa",
+        "sha256_cert_fingerprints": ["20:15:A9:D2:DE:4E:79:83:AB:E2:E8:DE:7C:87:18:97:81:19:36:D7:58:CB:0E:18:56:A0:B6:BB:28:58:DF:1E"]
+      }
+    }]
